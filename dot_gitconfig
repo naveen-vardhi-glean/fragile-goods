@@ -56,7 +56,7 @@
 [alias]
 	a = add
 	s = status
-	n = notes
+  # n = notes
 	co = checkout
 	ci = commit
 	cia = commit --amend
@@ -69,8 +69,8 @@
 	ls = log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative -20
 	la = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --all
 	d = diff --ignore-space-at-eol --diff-filter=MRCA
-	dt = difftool
-	df = "!git diff --ignore-space-at-eol --color $@ | diff-so-fancy"
+  # dt = difftool
+  # df = "!git diff --ignore-space-at-eol --color $@ | diff-so-fancy"
 	dc = diff --cached --ignore-space-at-eol
 	dw = diff --ignore-space-at-eol --diff-filter=MRCA --minimal --word-diff
 	cp = cherry-pick
@@ -79,6 +79,7 @@
 	rbm = rebase master --ignore-date
 	rbc = rebase --continue
 	rba = rebase --abort
+	rbi = rebase --interactive
 	mt = mergetool
 
 	last = log -1 -p --stat
@@ -115,9 +116,6 @@
 	merge-diff = "!git diff `git merge-span ... $1`"
 	# As above, but in your difftool
 	merge-difftool = "!git difftool `git merge-span ... $1`"
-
-	# Interactively rebase all the commits on the current branch
-	rebase-branch = "!git rebase -i `git merge-base master HEAD`"
 
 	#
 	# Working with files
@@ -167,23 +165,6 @@
 	# Frequently changed files
   code-changes = "!git log --format=format: --name-only | egrep -v '^$' | sort | uniq -c | sort -rg | head -10"
 
-  # Aliases of git town
-	append = town append
-	compress = town compress
-	contribute = town contribute
-	diff-parent = town diff-parent
-	hack = town hack
-	delete = town delete
-	observe = town observe
-	park = town park
-	prepend = town prepend
-	propose = town propose
-	rename = town rename
-	repo = town repo
-	set-parent = town set-parent
-	ship = town ship
-	sync = town sync
-
 # Diff tool
 [diff]
 	tool = difftastic
@@ -213,6 +194,8 @@
 
 [user]
 	useConfigOnly = true
+	email = naveen.vardhi@glean.com
+	name = Naveen Vardhi
 
 [includeIf "gitdir:~/source/"]
 	path = .gitconfig-source
@@ -220,10 +203,10 @@
 	path = .gitconfig-work
 [credential "https://github.com"]
 	helper =
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper = !gh auth git-credential
 [credential "https://gist.github.com"]
 	helper =
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper = !gh auth git-credential
 [rebase]
 	updateRefs = true
 [push]
