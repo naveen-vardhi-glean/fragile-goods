@@ -37,5 +37,8 @@ function install_packages {
 }
 
 function main {
+    echo "Bootstrap Linux"
     install_packages
 }
+
+main "$@"
