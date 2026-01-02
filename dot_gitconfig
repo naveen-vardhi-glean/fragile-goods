@@ -1,0 +1,232 @@
+[help]
+	autocorrect = 5
+[color]
+	ui = true
+[core]
+	editor = nano
+	excludesfile = ~/.gitignore
+	pager = delta
+	# Enable file system caching to avoid UAC issues.
+	fscache = true
+	# Enable parallel filesystem operations.
+	preloadindex = true
+
+	# Make `git rebase` safer on OS X
+	# More info: <http://www.git-tower.com/blog/make-git-rebase-safe-on-osx/>
+	trustctime = false
+
+	# Prevent showing files whose names contain non-ASCII symbols as unversioned.
+	# http://michael-kuehnel.de/git/2014/11/21/git-mac-osx-and-german-umlaute.html
+	precomposeunicode = false
+	commitGraph = true
+
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	features = line-numbers decorations
+	syntax-theme = GitHub
+	true-color = always
+
+# for $deity's sake, check that anything we're getting is complete and sane on a regular basis
+[transfer]
+	fsckobjects = true
+[fetch]
+	fsckobjects = true
+	prune = true
+[receive]
+	fsckObjects = true
+[gc]
+	writeCommitGraph = true
+	# Optimize for repositories with many files
+	auto = 256
+[commit]
+	template = ~/.gitmessage
+	verbose = true
+
+[status]
+	# Show relative path in git status
+	relativePaths = true
+
+# Sort branches and tags based on commiter date
+[branch]
+	sort = -committerdate
+[tag]
+	sort = -taggerdate
+
+[alias]
+	a = add
+	s = status
+	n = notes
+	co = checkout
+	ci = commit
+	cia = commit --amend
+	cian = commit --amend --no-edit
+	rb = rebase
+  b = branch
+  p = publish
+  pf = publish -f
+	l = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --all -20
+	ls = log --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative -20
+	la = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative --all
+	d = diff --ignore-space-at-eol --diff-filter=MRCA
+	dt = difftool
+	df = "!git diff --ignore-space-at-eol --color $@ | diff-so-fancy"
+	dc = diff --cached --ignore-space-at-eol
+	dw = diff --ignore-space-at-eol --diff-filter=MRCA --minimal --word-diff
+	cp = cherry-pick
+	rss = reset --soft
+	rsh = reset --hard
+	rbm = rebase master --ignore-date
+	rbc = rebase --continue
+	rba = rebase --abort
+	mt = mergetool
+
+	last = log -1 -p --stat
+	slap = blame -w
+	wip = "!git add -A; git ls-files --deleted -z | xargs -0 git rm; git commit --no-verify -m \"wip\""
+	unwip = "!git log -n 1 | grep -q -c wip && git reset HEAD~1"
+	news = log -p --diff-filter=MRCA HEAD@{1}..HEAD@{0}
+	up = "!git remote update -p; git merge --ff-only @{u}; git branch --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" { print $1 }' | xargs -r git branch -D"
+	fixup = "!f() { TARGET=$(git rev-parse "$1"); git commit --fixup=$TARGET ${@:2} && EDITOR=true git rebase -i --autostash --autosquash $TARGET^; }; f"
+	#
+	# Working with branches  https://gist.github.com/robmiller/6018582
+	#
+
+	# Get the current branch name (not so useful in itself, but used in
+	# other aliases)
+	branch-name = "!git rev-parse --abbrev-ref HEAD"
+	# Push the current branch to the remote "origin", and set it to track
+	# the upstream branch
+	publish = "!git push -u origin $(git branch-name)"
+	# Delete the remote version of the current branch
+	unpublish = "!(git push origin :$(git branch-name) && git branch --unset-upstream)"
+
+	# Fire up your difftool (e.g. Kaleidescope) with all the changes that
+	# are on the current branch.
+	code-review = difftool origin/master...
+
+	# Given a merge commit, find the span of commits that exist(ed) on that
+	# branch. Again, not so useful in itself, but used by other aliases.
+	merge-span = "!f() { echo $(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f1)$1$(git log -1 $2 --merges --pretty=format:%P | cut -d' ' -f2); }; f"
+
+	# Find the commits that were introduced by a merge
+	merge-log = "!git log `git merge-span .. $1`"
+	# Show the changes that were introduced by a merge
+	merge-diff = "!git diff `git merge-span ... $1`"
+	# As above, but in your difftool
+	merge-difftool = "!git difftool `git merge-span ... $1`"
+
+	# Interactively rebase all the commits on the current branch
+	rebase-branch = "!git rebase -i `git merge-base master HEAD`"
+
+	#
+	# Working with files
+	#
+
+	# Unstage any files that have been added to the staging area
+	stage = add
+	unstage = reset HEAD
+
+	# Mark a file as "assume unchanged", which means that Git will treat it
+	# as though there are no changes to it even if there are. Useful for
+	# temporary changes to tracked files
+	assume = update-index --assume-unchanged
+	# Reverse the above
+	unassume = update-index --no-assume-unchanged
+	# Show the files that are currently assume-unchanged
+	assumed = "!git ls-files -v | grep ^h | cut -c 3-"
+
+	# Checkout our version of a file and add it
+	ours = "!f() { git checkout --ours $@ && git add $@; }; f"
+	# Checkout their version of a file and add it
+	theirs = "!f() { git checkout --theirs $@ && git add $@; }; f"
+
+	# Delete any branches that have been merged into master
+	# See also: https://gist.github.com/robmiller/5133264
+	delete-merged-branches = "!git checkout master && git branch --merged | grep -Fv '+ ' | grep -Fv '* ' | xargs -n 1 git branch -d"
+
+	# Remove the old tag with this name and tag the latest commit with it.
+	retag = "!r() { git tag -d $1 && git push origin :refs/tags/$1 && git tag $1; }; r"
+
+
+	# Find branches containing commit
+	find-branch = "!f() { git branch -a --contains $1; }; f"
+
+	# Find tags containing commit
+	find-tag = "!f() { git describe --always --contains $1; }; f"
+
+	# Find commits by source code
+	find-code = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short -S$1; }; f"
+
+	# Find commits by commit message
+	find-message = "!f() { git log --pretty=format:'%C(yellow)%h  %Cblue%ad  %Creset%s%Cgreen  [%cn] %Cred%d' --decorate --date=short --grep=\"$1\"; }; f"
+
+	# List contributors with number of commits
+	contributors = shortlog --summary --numbered
+
+	# Frequently changed files
+  code-changes = "!git log --format=format: --name-only | egrep -v '^$' | sort | uniq -c | sort -rg | head -10"
+
+  # Aliases of git town
+	append = town append
+	compress = town compress
+	contribute = town contribute
+	diff-parent = town diff-parent
+	hack = town hack
+	delete = town delete
+	observe = town observe
+	park = town park
+	prepend = town prepend
+	propose = town propose
+	rename = town rename
+	repo = town repo
+	set-parent = town set-parent
+	ship = town ship
+	sync = town sync
+
+# Diff tool
+[diff]
+	tool = difftastic
+	colorMoved = default
+	algorithm = histogram
+[difftool]
+        prompt = false
+[difftool "difftastic"]
+        cmd = difft "$LOCAL" "$REMOTE"
+
+# Merge tool
+[merge]
+	tool = ediff
+	conflictStyle = zdiff3
+[mergetool]
+	prompt = false
+	keepBackup = false
+[mergetool.ediff]
+	cmd = emacs --quick \
+	--load ~/.emacs.d/lisp/init-ediff.el \
+	--eval \"(add-to-list 'default-frame-alist '(fullscreen . maximized))\" \
+	--eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" nil \\\"$MERGED\\\")\"
+[mergetool "meld"]
+	tool = meld
+	trustExitCode = true
+	cmd = Meld --auto-merge \"$PWD/$LOCAL\" \"$PWD/$BASE\" \"$PWD/$REMOTE\" --output=\"$PWD/$MERGED\"
+
+[user]
+	useConfigOnly = true
+
+[includeIf "gitdir:~/source/"]
+	path = .gitconfig-source
+[includeIf "gitdir:~/workspace/"]
+	path = .gitconfig-work
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[rebase]
+	updateRefs = true
+[push]
+	followTags = true
+[init]
+	defaultBranch = master
