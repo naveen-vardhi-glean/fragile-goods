@@ -23,6 +23,19 @@ readonly PACKAGES=(
     make
     build-essential
 )
+function fix_system_python {
+    (cd /usr/lib/python3/dist-packages
+        sudo ln -s apt_pkg.cpython-310-x86_64-linux-gnu.so apt_pkg.so
+    )
+}
 
-sudo apt-get update
-sudo apt-get install -y "${PACKAGES[@]}"
+function install_packages {
+    sudo apt-get update
+    fix_system_python
+    sudo apt-get install --reinstall python3-apt
+    sudo apt-get install -y "${PACKAGES[@]}"
+}
+
+function main {
+    install_packages
+}
