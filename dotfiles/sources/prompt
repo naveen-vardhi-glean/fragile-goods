@@ -1,0 +1,93 @@
+# Get git branch name
+function parse_git_branch() {
+    git branch 2>/dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+
+function is_ssh() {
+    if [ -n "$SSH_CLIENT" ] || [ -n "$SSH_TTY" ]; then
+        return 0
+        # many other tests omitted
+    else
+        case $(ps -o comm= -p $PPID) in
+        sshd | */sshd) return 0 ;;
+        esac
+    fi
+    return 1
+}
+
+# Virtual ENV stuff
+function venv_info() {
+    if [ -z "$VIRTUAL_ENV_DISABLE_PROMPT" ]; then
+        VIRT_ENV_TXT=""
+        if [ "x" != x ]; then
+            VIRT_ENV_TXT=""
+        else
+            if [ "$(basename \"$VIRTUAL_ENV\")" = "__" ]; then
+                # special case for Aspen magic directories
+                # see http://www.zetadev.com/software/aspen/
+                VIRT_ENV_TXT="[$(basename $(dirname \"$VIRTUAL_ENV\"))]"
+            elif [ "$VIRTUAL_ENV" != "" ]; then
+                VIRT_ENV_TXT="($(basename \"$VIRTUAL_ENV\"))"
+            fi
+        fi
+        if [ "${VIRT_ENV_TXT}" != "" ]; then
+            echo ${VIRT_ENV_TXT}" "
+        fi
+    fi
+}
+
+# PS1 prompt
+function prompt {
+    local EXIT_STATUS="$?" # This should be first statement
+    case $TERM in
+    rxvt* | xterm*)
+        local TITLEBAR='\[\033]0;\u@\h:\w\007\]'
+        ;;
+    *)
+        local TITLEBAR=''
+        ;;
+    esac
+    local NCOLOR="\[\e[0m\]"
+    local BLACK="\[\033[0;30m\]"
+    local BLACKBOLD="\[\033[1;30m\]"
+    local RED="\[\033[0;31m\]"
+    local REDBOLD="\[\033[1;31m\]"
+    local GREEN="\[\033[0;32m\]"
+    local GREENBOLD="\[\033[1;32m\]"
+    local YELLOW="\[\033[0;33m\]"
+    local YELLOWBOLD="\[\033[1;33m\]"
+    local BLUE="\[\033[0;34m\]"
+    local BLUEBOLD="\[\033[1;34m\]"
+    local PURPLE="\[\033[0;35m\]"
+    local PURPLEBOLD="\[\033[1;35m\]"
+    local CYAN="\[\033[0;36m\]"
+    local CYANBOLD="\[\033[1;36m\]"
+    local WHITE="\[\033[0;37m\]"
+    local WHITEBOLD="\[\033[1;37m\]"
+
+    local HOST="\H"
+    local USER="\u"
+    local DIR="\w"
+    local DATE="\d"
+    local TIME="\t"
+
+    local USERCOLOR=${REDBOLD}
+    if is_ssh; then
+        USERCOLOR=${PURPLEBOLD}
+    fi
+
+    # First line
+    PS1="${TITLEBAR}${USERCOLOR}${USER}@${HOST}: ${GREEN}${DIR} ${CYAN}\$(parse_git_branch) $(venv_info)\n"
+    if [ ${EXIT_STATUS} -eq 0 ]; then
+        PS1="${PS1}${BLACK}→${NCOLOR} "
+    else
+        PS1="${PS1}${RED}[${EXIT_STATUS##0}] ${BLACK}→${NCOLOR} "
+    fi
+
+    PS2="${BLACKBOLD}>${OFF} "
+}
+
+# Save each history entry immediately (protects against terminal crashes/
+# disconnections, and interleaves commands from multiple terminals in correct
+# chronological order). Also reload history
+export PROMPT_COMMAND="history -a; history -c; history -r; prompt"

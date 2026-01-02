@@ -1,0 +1,64 @@
+# Place file name in header when catting multiple files
+function mcat() {
+    more "$@" | cat
+}
+
+# Clear screen, cygwin seems to not have clear command
+function clear() {
+    if [ command -v clear ] 2>/dev/null; then
+        clear
+    else
+        printf "\033c"
+    fi
+}
+
+function g() {
+    if [ $# -eq 0 ]; then
+        git status
+    else
+        git "$@"
+    fi
+}
+
+function scr {
+    local host=${1? Where is the host}
+    ssh "$host" -t screen -x -R -S "$USER"
+}
+
+function pytrace {
+    # or sys.path
+    python -m trace \
+        --ignore-dir=$(python -c 'import sys ; print(":".join([sys.prefix, sys.exec_prefix] + sys.path)[1:])') \
+        --trace "$@"
+}
+
+function youtube-audio {
+    youtube-dl --download-archive downloaded.txt --extract-audio --audio-format mp3 --audio-quality 0 "$@"
+}
+
+function emcs {
+    pgrep -i emacs || emacs --daemon
+    emacsclient -c -a emacs "$@"
+}
+
+function cheat {
+    # Replace spaces with slashes
+    local args="$@"
+    curl "cheat.sh/${args// //}"?style=tango
+}
+
+function xkcd_password {
+    curl -s 'https://www.eff.org/files/2016/07/18/eff_large_wordlist.txt' | shuf | head -5 | cut -f2 | tr '\n' ' ' | sed 's/ $/\n/g'
+}
+
+function notify {
+    osascript -e "display notification $2 with title $1" && say "$1"
+}
+
+function docker-bash {
+    docker exec -i -t "$1" /bin/bash
+}
+
+function docker-run-bash {
+    docker run --rm -it --entrypoint /bin/bash "$1"
+}

@@ -1,0 +1,74 @@
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# http://unix.stackexchange.com/questions/2897/clicolor-and-ls-colors-in-bash
+export CLICOLOR=1
+export LSCOLORS="ExGxBxDxCxEgEdxbxgxcxd"
+
+# change this to vim or emacs, if you don't want to use nano
+export EDITOR="nano"
+
+# Don't generate .pyc files
+export PYTHONDONTWRITEBYTECODE=1
+
+# For starting emacs server
+export ALTERNATE_EDITOR=""
+
+# Disable brew auto updates and cleanup message
+export HOMEBREW_NO_AUTO_UPDATE=1
+export HOMEBREW_NO_INSTALL_CLEANUP=1
+
+# Ripgrep config
+export RIPGREP_CONFIG_PATH="${HOME}/dotfiles/config/ripgrep"
+
+eval $(/opt/homebrew/bin/brew shellenv)
+BREW_PREFIX="${HOMEBREW_PREFIX}"
+if [[ -d "${BREW_PREFIX}" ]]; then
+    # Add brew path for coreutils
+    [ -d "${BREW_PREFIX}/opt/coreutils/libexec/gnubin" ] && PATH="${BREW_PREFIX}/opt/coreutils/libexec/gnubin:$PATH"
+    [ -d "${BREW_PREFIX}/opt/findutils/libexec/gnubin" ] && PATH="${BREW_PREFIX}/opt/findutils/libexec/gnubin:$PATH"
+    [ -d "${BREW_PREFIX}/opt/gnu-sed/libexec/gnubin" ] && PATH="${BREW_PREFIX}/opt/gnu-sed/libexec/gnubin:$PATH"
+    [ -d "${BREW_PREFIX}/opt/python/libexec/gnubin" ] && PATH="${BREW_PREFIX}/opt/python/libexec/gnubin:$PATH"
+    [ -d "${BREW_PREFIX}/opt/gnu-tar/libexec/gnubin" ] && PATH="${BREW_PREFIX}/opt/gnu-tar/libexec/gnubin:$PATH"
+    [ -d "${BREW_PREFIX}/opt/grep/libexec/gnubin" ] && PATH="${BREW_PREFIX}/opt/grep/libexec/gnubin:$PATH"
+    [ -d "${BREW_PREFIX}/opt/curl/bin" ] && PATH="${BREW_PREFIX}/opt/curl/bin:$PATH"
+    [ -d "${BREW_PREFIX}/opt/python/libexec/bin" ] && PATH="${BREW_PREFIX}/opt/python/libexec/bin:$PATH"
+    [ -f "${BREW_PREFIX}/share/google-cloud-sdk/path.bash.inc" ] && source "${BREW_PREFIX}/share/google-cloud-sdk/path.bash.inc"
+    export PATH="$PATH"
+fi
+
+# Getting bash completions working https://discourse.brew.sh/t/bash-completion-2-vs-brews-auto-installed-bash-completions/2391/2
+if [[ $PS1 && -e "/usr/local/share/bash-completion/bash_completion" ]]; then
+    export BASH_COMPLETION_COMPAT_DIR="/usr/local/etc/bash_completion.d"
+    source "/usr/local/share/bash-completion/bash_completion"
+elif [[ $PS1 && -e "/usr/local/etc/profile.d/bash_completion.sh" ]]; then
+    source "/usr/local/etc/profile.d/bash_completion.sh"
+elif [[ $PS1 && -e "/etc/bash_completion" ]]; then
+    source "/etc/bash_completion"
+elif [[ $PS1 && -e "${BREW_PREFIX}/etc/bash_completion.d/" ]]; then
+    export BASH_COMPLETION_COMPAT_DIR="${BREW_PREFIX}/etc/bash_completion.d"
+    source "${BREW_PREFIX}/etc/profile.d/bash_completion.sh"
+fi
+
+# Source localrc
+[ -f ~/.localrc ] && source ~/.localrc
+
+# Instead of flow control use Ctrl-s for i-search of history
+[[ $- == *i* ]] && stty -ixon
+
+# Cargo rust binaries
+[ -d "${HOME}/.cargo/bin" ] && export PATH="${HOME}/.cargo/bin:$PATH"
+
+# Pipx directory
+[ -d "${HOME}/.local/bin" ] && export PATH="${HOME}/.local/bin:$PATH"
+
+# Go binaries
+# [ -x $(hash go 2>/dev/null) ] && export PATH="$(go env GOPATH)/bin:$PATH"
+
+# fzf
+eval "$(fzf --bash)"
+export FZF_DEFAULT_OPTS="--height=40% --layout=reverse --info=inline --preview='echo {}' --preview-window=down:wrap --no-hscroll --border"
+
+# Java SDK manager
+export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
+[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"

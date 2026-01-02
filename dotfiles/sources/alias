@@ -1,0 +1,57 @@
+# Detect which `ls` flavor is in use
+if ls --color >/dev/null 2>&1; then # GNU `ls`
+    colorflag="--color"
+else # OS X `ls`
+    colorflag="-G"
+fi
+
+# Alias
+alias df='df -h'
+alias du='du -h'
+
+alias ls='ls -GhvX --group-directories-first ${colorflag}'    # classify files in colour
+alias la='ls -AGhvX --group-directories-first ${colorflag}'   # All files except . and ..
+alias ll='ls -lAGh1vX --group-directories-first ${colorflag}' # All files except . and .. in long listing
+
+alias less='less -r' # raw control characters
+alias ltail="less -Ri +F"
+alias whence='type -a' # where, of a sort
+
+alias grep='grep --color=auto'
+
+# Modify using http://astyle.sourceforge.net/astyle.html
+ASTYLE_PARAMETERS="--style=stroustrup \
+    --indent=spaces=4 \
+    --convert-tabs \
+    --indent-classes \
+    --indent-switches \
+    --indent-labels \
+    --indent-col1-comments \
+    --min-conditional-indent=0 \
+    --pad-oper \
+    --unpad-paren \
+    --align-pointer=name \
+    --lineend=linux \
+    --suffix=none"
+alias astyle='AStyle ${ASTYLE_PARAMETERS}'
+
+alias rot13='tr a-zA-Z n-za-mN-ZA-M'       # ROT13-encode text. Works for decoding, too! ;)
+alias words='tr -s [:punct:][:cntrl:] " "' # words seperated by spaces, pipe through fmt -1 for line by line
+alias week='date +%V'                      # Get week number
+alias ipaddr="curl http://icanhazip.com/"  # ip address
+
+# URL-encode and decode strings
+alias urlencode='python2 -c "import sys, urllib2 as ul; print ul.quote(sys.argv[1]);"'
+alias urldecode='python2 -c "import sys, urllib2 as ul; print ul.unquote(sys.argv[1]);"'
+alias stamp='date "+%Y-%m-%d-%H:%M:%S"'
+alias brwe=brew
+alias mvp="MAVEN_OPTS='-XX:+TieredCompilation -XX:TieredStopAtLevel=1' mvn clean package -DskipTests=true -T 2C"
+
+# alias ec='emacsclient -n -c'
+alias cdgit='cd $(git rev-parse --show-toplevel)'
+alias alert='tput bel'
+alias yd='youtube-dl -f best'
+
+alias r=rg
+alias f=fd
+alias cd="z"
