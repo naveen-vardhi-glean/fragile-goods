@@ -6,22 +6,66 @@ IFS=$'\n\t'
 DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 
 readonly PACKAGES=(
-    git
-    curl
-    wget
-    vim
-    tmux
-    htop
-    tree
-    jq
-    ripgrep
-    fzf
-    fd-find
-    bat
-    unzip
-    zip
+    # Build essentials
     make
     build-essential
+
+    # Core utilities
+    coreutils
+    findutils
+    moreutils
+    binutils
+    diffutils
+
+    # Shell
+    bash-completion
+    screen
+
+    # Network
+    curl
+    wget
+    rsync
+
+    # Compression
+    unzip
+    zip
+
+    # Editors
+    vim
+    nano
+
+    # File utilities
+    tree
+    less
+
+    # Search tools
+    ripgrep
+    fd-find
+    fzf
+
+    # JSON/XML
+    jq
+    xmlstarlet
+
+    # Dev tools
+    git
+    sqlite3
+    openssl
+    shellcheck
+
+    # Misc utilities
+    bat
+    pv
+    aspell
+    lynx
+    pipx
+    ffmpeg
+    pandoc
+    direnv
+    tmux
+    htop
+    watch
+    gnutls-bin
 )
 function fix_system_python {
     (cd /usr/lib/python3/dist-packages
@@ -31,13 +75,13 @@ function fix_system_python {
 
 function install_packages {
     sudo apt-get update
-    fix_system_python
     sudo apt-get install --reinstall python3-apt
     sudo apt-get install -y "${PACKAGES[@]}"
 }
 
 function main {
     echo "Bootstrap Linux"
+    fix_system_python
     install_packages
 }
 
