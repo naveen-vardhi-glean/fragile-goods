@@ -69,7 +69,7 @@ readonly PACKAGES=(
 )
 function fix_system_python {
     (cd /usr/lib/python3/dist-packages
-        sudo ln -s apt_pkg.cpython-310-x86_64-linux-gnu.so apt_pkg.so
+        sudo ln -sf apt_pkg.cpython-310-x86_64-linux-gnu.so apt_pkg.so
     )
 }
 
