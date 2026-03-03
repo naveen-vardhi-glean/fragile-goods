@@ -54,10 +54,8 @@ readonly PACKAGES=(
     shellcheck
 
     # Misc utilities
-    bat
     pv
     aspell
-    lynx
     pipx
     ffmpeg
     pandoc
@@ -81,7 +79,7 @@ function install_packages {
 
 function main {
     echo "Bootstrap Linux"
-    fix_system_python
+    # fix_system_python
     install_packages
 }
 
