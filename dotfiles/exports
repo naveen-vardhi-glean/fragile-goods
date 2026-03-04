@@ -34,6 +34,7 @@ if [[ -d "${BREW_PREFIX}" ]]; then
     [ -d "${BREW_PREFIX}/opt/curl/bin" ] && PATH="${BREW_PREFIX}/opt/curl/bin:$PATH"
     [ -d "${BREW_PREFIX}/opt/python/libexec/bin" ] && PATH="${BREW_PREFIX}/opt/python/libexec/bin:$PATH"
     [ -f "${BREW_PREFIX}/share/google-cloud-sdk/path.bash.inc" ] && source "${BREW_PREFIX}/share/google-cloud-sdk/path.bash.inc"
+    [[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"
     export PATH="$PATH"
 fi
 
@@ -67,9 +68,5 @@ fi
 # [ -x $(hash go 2>/dev/null) ] && export PATH="$(go env GOPATH)/bin:$PATH"
 
 # fzf
-eval "$(fzf --bash)"
 export FZF_DEFAULT_OPTS="--height=40% --layout=reverse --info=inline --preview='echo {}' --preview-window=down:wrap --no-hscroll --border"
 
-# Java SDK manager
-export SDKMAN_DIR=$(brew --prefix sdkman-cli)/libexec
-[[ -s "${SDKMAN_DIR}/bin/sdkman-init.sh" ]] && source "${SDKMAN_DIR}/bin/sdkman-init.sh"

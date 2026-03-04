@@ -10,8 +10,8 @@ shopt -s globstar
 
 
 # All the settings reside inside ~/config/ folder, so source all those files.
-source ${HOME}/source/dotfiles/exports
-for file in ${HOME}/source/dotfiles/sources/*
+source ${HOME}/dotfiles/exports
+for file in ${HOME}/dotfiles/sources/*
 do
     source $file
 done
